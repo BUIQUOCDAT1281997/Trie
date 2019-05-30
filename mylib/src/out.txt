@@ -1,5 +1,0 @@
-dat
-dep
-doi
-trai
-voai
