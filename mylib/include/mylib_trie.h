@@ -4,16 +4,15 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-// Объявление используемого типа
-// Переменная этого типа не может быть создана пользователем библиотеки, так как тип не определен
 struct TrieNode;
 
 // Функции для работы с типом TrieNode
 extern struct TrieNode *getNode(void);
 extern void deleteChildrenNode(struct TrieNode *node);
-extern void insert(struct TrieNode *root, const char *key);
-extern bool search(struct TrieNode *root, const char *key);
+extern void insert(struct TrieNode *root, const char *key,char *value);
+extern char *search(struct TrieNode *root, const char *key);
 extern bool isEmpty(struct TrieNode *root);
 extern struct TrieNode *removeKey(struct TrieNode *root, const char *key, int depth);
+extern void display(struct TrieNode* root, char str[], int level);
 
 #endif

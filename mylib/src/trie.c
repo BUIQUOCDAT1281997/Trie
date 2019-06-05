@@ -3,16 +3,20 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
-#include <stdbool.h> 
+#include <stdbool.h>
+#include <locale.h> 
 
 #define ARRAY_SIZE(a) sizeof(a)/sizeof(a[0]) 
 
 // Alphabet size (# of symbols) 
 #define ALPHABET_SIZE (95) 
 
-// Converts key current character into index 
-// use only 'a' through 'z' and lower case 
+// Converts key current character into index  
 #define CHAR_TO_INDEX(c) ((int)c - (int)' ') 
+
+#define FREE(p) \
+    free(p);    \
+    p = NULL;
 
 // trie node 
 struct TrieNode
@@ -22,6 +26,8 @@ struct TrieNode
 	// isEndOfWord is true if the node represents 
 	// end of a word 
 	bool isEndOfWord;
+	//value is NULL if isEnOfWord is false 
+	char *value;
 };
 
 // Returns new trie node (initialized to NULLs) 
@@ -39,6 +45,8 @@ struct TrieNode *getNode(void)
 
 		for (i = 0; i < ALPHABET_SIZE; i++)
 			pNode->children[i] = NULL;
+
+		pNode->value = NULL;
 	}
 
 	return pNode;
@@ -48,12 +56,14 @@ struct TrieNode *getNode(void)
 void deleteChildrenNode(struct TrieNode *node)
 {
 	for (int i = 0; i < ALPHABET_SIZE; i++)
-		node->children[i] = NULL;
+	{
+		FREE(node->children[i]);
+	}
 }
 
 // If not present, inserts key into trie 
 // If the key is prefix of trie node, just marks leaf node 
-void insert(struct TrieNode *root, const char *key)
+void insert(struct TrieNode *root, const char *key,char *value)
 {
 	int level;
 	int length = strlen(key);
@@ -72,10 +82,11 @@ void insert(struct TrieNode *root, const char *key)
 
 	// mark last node as leaf 
 	pCrawl->isEndOfWord = true;
+
+	pCrawl->value = value;
 }
 
-// Returns true if key presents in trie, else false 
-bool search(struct TrieNode *root, const char *key)
+char *search(struct TrieNode *root, const char *key)
 {
 	int level;
 	int length = strlen(key);
@@ -92,7 +103,14 @@ bool search(struct TrieNode *root, const char *key)
 		pCrawl = pCrawl->children[index];
 	}
 
-	return (pCrawl != NULL && pCrawl->isEndOfWord);
+	if (pCrawl != NULL && pCrawl->isEndOfWord)
+	{
+		return pCrawl->value;
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 // Returns true if root has no children, else false 
@@ -104,7 +122,7 @@ bool isEmpty(struct TrieNode* root)
 	return true;
 }
 
-// Recursive function to delete a key from given Trie 
+// Recursive function to delete a key and value from given Trie 
 struct TrieNode *removeKey(struct TrieNode* root, const char *key, int depth)
 {
 	// If tree is empty 
@@ -117,7 +135,10 @@ struct TrieNode *removeKey(struct TrieNode* root, const char *key, int depth)
 		// This node is no more end of word after 
 		// removal of given key 
 		if (root->isEndOfWord)
+		{
 			root->isEndOfWord = false;
+			FREE(root->value);
+		}
 
 		// If given is not prefix of any other word 
 		if (isEmpty(root)) {
@@ -152,12 +173,17 @@ void display(struct TrieNode* root, char str[], int level)
 	// and string is displayed 
 	if (root->isEndOfWord)
 	{
-		str[level] = '\n';
+		//str[level] = '\n';
 		printf("\n");
 		for (int k = 0; k < level; k++)
 		{
 			printf("%c", str[k]);
+
 		}
+		printf(" - ");
+
+		printf("%s", root->value);
+
 	}
 
 	int i;
