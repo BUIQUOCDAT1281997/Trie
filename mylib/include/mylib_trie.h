@@ -4,7 +4,16 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-struct TrieNode;
+#define ALPHABET_SIZE (95) 
+
+//struct TrieNode;
+struct TrieNode
+{
+	struct TrieNode *children[ALPHABET_SIZE];
+
+	bool isEndOfWord;
+	char *value;
+};
 
 // Функции для работы с типом TrieNode
 extern struct TrieNode *getNode(void);

@@ -1,4 +1,4 @@
-#include "mylib_trie.h"
+#include "../include/mylib_trie.h"
 
 #include <stdio.h> 
 #include <stdlib.h> 
@@ -19,7 +19,7 @@
     p = NULL;
 
 // trie node 
-struct TrieNode
+/*struct TrieNode
 {
 	struct TrieNode *children[ALPHABET_SIZE];
 
@@ -28,7 +28,7 @@ struct TrieNode
 	bool isEndOfWord;
 	//value is NULL if isEnOfWord is false 
 	char *value;
-};
+};*/
 
 // Returns new trie node (initialized to NULLs) 
 struct TrieNode *getNode(void)
@@ -137,13 +137,13 @@ struct TrieNode *removeKey(struct TrieNode* root, const char *key, int depth)
 		if (root->isEndOfWord)
 		{
 			root->isEndOfWord = false;
-			FREE(root->value);
+			
 		}
 
 		// If given is not prefix of any other word 
 		if (isEmpty(root)) {
 			deleteChildrenNode(root);
-			root = NULL;
+			FREE(root);
 		}
 
 		return root;
@@ -159,7 +159,7 @@ struct TrieNode *removeKey(struct TrieNode* root, const char *key, int depth)
 	// deleted), and it is not end of another word. 
 	if (isEmpty(root) && root->isEndOfWord == false) {
 		deleteChildrenNode(root);
-		root = NULL;
+		FREE(root);
 	}
 
 	return root;
